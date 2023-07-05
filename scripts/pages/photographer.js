@@ -25,4 +25,5 @@ async function getMediaByPhotographerId() {
   photographerProfilTemplate(photographer, media)
 }
 
+
 getMediaByPhotographerId()
