@@ -74,3 +74,72 @@ form input {
     border: none;
     border-radius: 5px;
 }
+
+.photograph-header {
+    background-color: #FAFAFA;
+    height: 300px;
+    margin: 0 100px;
+    padding: 0 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.photograph-header div:first-child h1{
+    font-size: 64px;
+    color: #D3573C;
+    margin: 0;
+}
+
+.photograph-header div:first-child p:first-of-type {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #901C1C;
+}
+
+.photograph-header div:last-child img {
+    object-fit: cover;
+    height: 200px;
+    width: 200px;
+    border-radius: 10em;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+}
+
+.portfolio article img, .portfolio article video {
+    object-fit: cover;
+    object-position: 50% 35%;
+    border-radius: 0.4em;
+    height: 300px;
+    width: 350px;
+    cursor: pointer;
+}
+
+.portfolio {
+    margin: 80px 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    position: relative;
+    margin: 30px 100px;
+}
+
+.portfolio article {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.portfolio article > div {
+    width: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0px;
+    font-size: 20px;
+}
+
+.portfolio article div span {
+    color: #901C1C;
+}

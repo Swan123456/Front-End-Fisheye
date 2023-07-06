@@ -65,9 +65,10 @@ function photographerTemplate(data) {
 
 function photographerProfilTemplate(photographer, media) {
     const { id, name, portrait, city, country, tagline, price } = photographer;
-    const photographersSection = document.querySelector(".photographer_section");
+    const photographersSection = document.querySelector(".photograph-header");
     const portfolioSection = document.querySelector(".portfolio-section")
 
+    // instansiation de l'objet media
     const mediaObjects = media.map((m) => new Media(m));
 
     function photographerProfil() {
@@ -78,14 +79,14 @@ function photographerProfilTemplate(photographer, media) {
         h1.textContent = name;
       
         const pCity = document.createElement('p');
-        pCity.textContent = city;
-      
-        const pCountry = document.createElement('p');
-        pCountry.textContent = country;
+        pCity.textContent = city + ' ' + country;
+
+        const pTagline = document.createElement('p');
+        pTagline.textContent = tagline;
 
         div.appendChild(h1);
         div.appendChild(pCity);
-        div.appendChild(pCountry);
+        div.appendChild(pTagline);
 
         const divPortrait = document.createElement('div');
         photographersSection.appendChild(divPortrait);
@@ -95,17 +96,23 @@ function photographerProfilTemplate(photographer, media) {
         img.setAttribute('alt', name);
 
         divPortrait.appendChild(img);
+
+        const contactButton = document.querySelector('.contact_button');
+        photographersSection.insertBefore(div, contactButton, div);
     }
 
     function portfolio() {
-        const div = document.createElement('div');
+        const div = document.querySelector('.portfolio');
+        // variable pour avoir le bon chemin du dossier ou se trouve les photos
         const directoryName = name.split(' ')[0];;
         portfolioSection.appendChild(div);
 
         mediaObjects.forEach((m) => {
-            const card = document.createElement('div');
+            const card = document.createElement('article');
             const mediaElement = m.image ? document.createElement('img') : document.createElement('video');
-            const name = document.createElement('p');
+            const content = document.createElement('div');
+            const name = document.createElement('span');
+            const likes = document.createElement('span');
 
             if (m.image) {
                 mediaElement.setAttribute('src', `assets/media/${directoryName}/${m.image}`);
@@ -119,12 +126,16 @@ function photographerProfilTemplate(photographer, media) {
               }
           
               name.textContent = m.title;
+              likes.textContent = m.likes;
           
               card.appendChild(mediaElement);
               card.appendChild(name);
+              card.appendChild(content);
+              content.appendChild(name);
+              content.appendChild(likes);
           
               div.appendChild(card);
-          });
+        });
         
     }
 
