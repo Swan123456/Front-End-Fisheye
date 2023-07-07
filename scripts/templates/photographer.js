@@ -24,6 +24,9 @@ class Media {
             this.price = data.price;
         }
     }
+    getLikes() {
+        return this.likes;
+    }
 }
 
 function photographerTemplate(data) {
@@ -49,7 +52,7 @@ function photographerTemplate(data) {
         p.textContent = city + ', ' + country;
 
         const desc = document.createElement('p');
-        desc.innerHTML = tagline + `<br>` + price + '€';
+        desc.innerHTML = tagline + `<br>` + price + '€' + '/jour';
 
         link.appendChild(img);
         link.appendChild(h2);
@@ -60,13 +63,17 @@ function photographerTemplate(data) {
         return article;
     }
 
-    return { name, picture, getUserCardDOM };
+    return { name, picture, getUserCardDOM, price };
 }
 
 function photographerProfilTemplate(photographer, media) {
     const { id, name, portrait, city, country, tagline, price } = photographer;
     const photographersSection = document.querySelector(".photograph-header");
-    const portfolioSection = document.querySelector(".portfolio-section")
+    const portfolioSection = document.querySelector(".portfolio-section");
+
+    // declaration des variables pour compter les likes 
+    const likesTotalElement = document.createElement('div');
+    let likesTotal = 0;
 
     // instansiation de l'objet media
     const mediaObjects = media.map((m) => new Media(m));
@@ -99,14 +106,17 @@ function photographerProfilTemplate(photographer, media) {
 
         const contactButton = document.querySelector('.contact_button');
         photographersSection.insertBefore(div, contactButton, div);
+        aside();
     }
 
     function portfolio() {
         const div = document.querySelector('.portfolio');
-        // variable pour avoir le bon chemin du dossier ou se trouve les photos
         const directoryName = name.split(' ')[0];;
+        // variable pour avoir le bon chemin du dossier ou se trouve les photos
         portfolioSection.appendChild(div);
 
+        let likesTotal = 0; 
+        
         mediaObjects.forEach((m) => {
             const card = document.createElement('article');
             const mediaElement = m.image ? document.createElement('img') : document.createElement('video');
@@ -114,17 +124,28 @@ function photographerProfilTemplate(photographer, media) {
             const name = document.createElement('span');
             const likes = document.createElement('span');
 
+            // incrementation des likes au click
+            mediaElement.addEventListener('click', () => {
+                m.likes++; 
+                likes.textContent = m.likes; 
+            
+                likesTotal++; 
+                likesTotalElement.textContent = likesTotal; 
+            });
+
+
             if (m.image) {
                 mediaElement.setAttribute('src', `assets/media/${directoryName}/${m.image}`);
-              } else if (m.video) {
+            } else if (m.video) {
                 const source = document.createElement('source');
                 source.setAttribute('src', `assets/media/${directoryName}/${m.video}`);
                 source.setAttribute('type', 'video/mp4');
                 mediaElement.appendChild(source);
                 mediaElement.setAttribute('controls', '');
                 mediaElement.setAttribute('preload', 'metadata');
-              }
-          
+            }
+              
+              likesTotal += m.likes;
               name.textContent = m.title;
               likes.textContent = m.likes;
           
@@ -136,7 +157,22 @@ function photographerProfilTemplate(photographer, media) {
           
               div.appendChild(card);
         });
+        return likesTotal
+    }
+
+    function aside() {
+        const asideElement = document.querySelector('aside');
+        const priceElement = document.createElement('div');
         
+        mediaObjects.forEach((m) => {
+            const likes = m.getLikes(); 
+            likesTotal += likes;
+        });
+        
+        likesTotalElement.textContent = likesTotal;
+        priceElement.textContent = price + '€' + '/jour';
+        asideElement.appendChild(likesTotalElement);
+        asideElement.appendChild(priceElement);
     }
 
     photographerProfil()
