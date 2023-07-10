@@ -73,7 +73,6 @@ function photographerProfilTemplate(photographer, media) {
 
     // declaration des variables pour compter les likes 
     const likesTotalElement = document.createElement('div');
-    let likesTotal = 0;
 
     // instansiation de l'objet media
     const mediaObjects = media.map((m) => new Media(m));
@@ -111,11 +110,21 @@ function photographerProfilTemplate(photographer, media) {
 
     function portfolio() {
         const div = document.querySelector('.portfolio');
-        const directoryName = name.split(' ')[0];;
+        const directoryName = name.split(' ')[0];
         // variable pour avoir le bon chemin du dossier ou se trouve les photos
         portfolioSection.appendChild(div);
-
         let likesTotal = 0; 
+        likesTotalElement.textContent = likesTotal;
+
+        // mise a joursdes likes totals pour le petit onglet aside en bas a droite 
+        function updateLikesTotal() {
+            likesTotal = 0;
+            mediaObjects.forEach((m) => {
+              likesTotal += m.getLikes();
+            });
+            likesTotalElement.textContent = likesTotal;
+            return likesTotal;
+        }
         
         mediaObjects.forEach((m) => {
             const card = document.createElement('article');
@@ -124,16 +133,28 @@ function photographerProfilTemplate(photographer, media) {
             const name = document.createElement('span');
             const likes = document.createElement('span');
 
-            // incrementation des likes au click
-            mediaElement.addEventListener('click', () => {
-                m.likes++; 
-                likes.textContent = m.likes; 
-            
-                likesTotal++; 
-                likesTotalElement.textContent = likesTotal; 
-            });
+            // incrementation ou décrémentation des likes au click
+            const likeIcon = document.createElement('i');
+            likeIcon.classList.add('far', 'fa-heart');
 
-
+            likeIcon.addEventListener('click', () => {
+            if (likeIcon.classList.contains('far')) {
+                // L'utilisateur a cliqué pour ajouter un like
+                m.likes++;
+                likes.textContent = m.likes;
+                likeIcon.classList.remove('far');
+                likeIcon.classList.add('fas');
+            } else {
+                // L'utilisateur a cliqué pour retirer un like
+                m.likes--;
+                likes.textContent = m.likes;
+                likeIcon.classList.remove('fas');
+                likeIcon.classList.add('far');
+            }
+            updateLikesTotal();
+        });
+        updateLikesTotal();
+        
             if (m.image) {
                 mediaElement.setAttribute('src', `assets/media/${directoryName}/${m.image}`);
             } else if (m.video) {
@@ -154,28 +175,26 @@ function photographerProfilTemplate(photographer, media) {
               card.appendChild(content);
               content.appendChild(name);
               content.appendChild(likes);
+              content.appendChild(likeIcon);
           
               div.appendChild(card);
         });
-        return likesTotal
     }
 
+    // affichage de l'onglet e bas a droite 
     function aside() {
         const asideElement = document.querySelector('aside');
         const priceElement = document.createElement('div');
-        
-        mediaObjects.forEach((m) => {
-            const likes = m.getLikes(); 
-            likesTotal += likes;
-        });
-        
-        likesTotalElement.textContent = likesTotal;
+        const likeIcon = document.createElement('i');
+        likeIcon.classList.add('fas', 'fa-heart');
+
         priceElement.textContent = price + '€' + '/jour';
         asideElement.appendChild(likesTotalElement);
+        asideElement.appendChild(likeIcon);
         asideElement.appendChild(priceElement);
     }
 
-    photographerProfil()
     portfolio()
+    photographerProfil()
 
 }
