@@ -70,6 +70,7 @@ function photographerProfilTemplate(photographer, media) {
     const { id, name, portrait, city, country, tagline, price } = photographer;
     const photographersSection = document.querySelector(".photograph-header");
     const portfolioSection = document.querySelector(".portfolio-section");
+    const directoryName = name.split(' ')[0];
 
     // declaration des variables pour compter les likes 
     const likesTotalElement = document.createElement('div');
@@ -110,7 +111,6 @@ function photographerProfilTemplate(photographer, media) {
 
     function portfolio() {
         const div = document.querySelector('.portfolio');
-        const directoryName = name.split(' ')[0];
         // variable pour avoir le bon chemin du dossier ou se trouve les photos
         portfolioSection.appendChild(div);
         let likesTotal = 0; 
@@ -126,12 +126,29 @@ function photographerProfilTemplate(photographer, media) {
             return likesTotal;
         }
         
-        mediaObjects.forEach((m) => {
+        mediaObjects.forEach((m, index) => {
             const card = document.createElement('article');
             const mediaElement = m.image ? document.createElement('img') : document.createElement('video');
             const content = document.createElement('div');
             const name = document.createElement('span');
             const likes = document.createElement('span');
+
+            // affichage de l'image en grand au clique
+            mediaElement.addEventListener('click', (event) => {
+                event.stopPropagation();
+                if (m.video) {
+                    mediaElement = document.createElement('video');
+                    const source = document.createElement('source');
+                    source.setAttribute('src', imageUrl);
+                    source.setAttribute('type', 'video/mp4');
+                    mediaElement.appendChild(source);
+                    mediaElement.setAttribute('controls', '');
+                    mediaElement.setAttribute('preload', 'metadata');
+                } else {
+                  const imageUrl = `assets/media/${directoryName}/${m.image}`;
+                  displayImageOverlay(imageUrl, index, mediaObjects, directoryName);
+                }
+              });
 
             // incrementation ou décrémentation des likes au click
             const likeIcon = document.createElement('i');
@@ -194,7 +211,71 @@ function photographerProfilTemplate(photographer, media) {
         asideElement.appendChild(priceElement);
     }
 
+    // fonction d'affichage de l'image en grand
+    function displayImageOverlay(imageUrl, currentIndex, mediaObjects, directoryName) {
+        const overlay = document.createElement('div');
+        overlay.classList.add('image-overlay');
+
+        const closeIcon = document.createElement('span');
+        closeIcon.classList.add('close-icon');
+        closeIcon.innerHTML = '&times;';
+        overlay.appendChild(closeIcon);
+
+        let mediaElement;
+
+          if (mediaObjects[currentIndex].image) {
+            mediaElement = document.createElement('img');
+            mediaElement.setAttribute('src', imageUrl);
+            mediaElement.setAttribute('alt', 'Image en grand');
+          } else if (mediaObjects[currentIndex].video) {
+            mediaElement = document.createElement('video');
+            const source = document.createElement('source');
+            source.setAttribute('src', imageUrl);
+            source.setAttribute('type', 'video/mp4');
+            mediaElement.appendChild(source);
+            mediaElement.setAttribute('controls', '');
+            mediaElement.setAttribute('preload', 'metadata');
+          }
+          
+        overlay.appendChild(mediaElement);
+
+        const backIcon = document.createElement('span');
+        backIcon.classList.add('back-icon');
+        backIcon.innerHTML = '<i class="fas fa-chevron-left"></i>';
+        overlay.appendChild(backIcon);
+
+        const nextIcon = document.createElement('span');
+        nextIcon.classList.add('next-icon');
+        nextIcon.innerHTML = '<i class="fas fa-chevron-right"></i>';
+        overlay.appendChild(nextIcon);
+      
+        document.body.appendChild(overlay);
+
+        closeIcon.addEventListener('click', () => {
+            document.body.removeChild(overlay);
+        });
+
+        backIcon.addEventListener('click', () => {
+            const prevIndex = currentIndex - 1 < 0 ? mediaObjects.length - 1 : currentIndex - 1;
+            const prevMedia = mediaObjects[prevIndex];
+            const prevImageUrl = `assets/media/${directoryName}/${prevMedia.image || prevMedia.video}`;
+            displayImageOverlay(prevImageUrl, prevIndex, mediaObjects, directoryName);
+            document.body.removeChild(overlay);
+        });
+
+        nextIcon.addEventListener('click', () => {
+            const nextIndex = (currentIndex + 1) % mediaObjects.length;
+            const nextMedia = mediaObjects[nextIndex];
+            const nextImageUrl = `assets/media/${directoryName}/${nextMedia.image || nextMedia.video}`;
+            displayImageOverlay(nextImageUrl, nextIndex, mediaObjects, directoryName);
+            document.body.removeChild(overlay);
+        });
+
+    }
+
     portfolio()
     photographerProfil()
 
 }
+
+
