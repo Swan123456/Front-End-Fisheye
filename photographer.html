@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
   <head>
     <link href="css/style.css" rel="stylesheet" type="text/css" />
     <meta charset="utf-8">
@@ -30,7 +30,7 @@
         <div class="modal">
           <header>
             <h2>Contactez-moi</h2>
-            <img src="assets/icons/close.svg" onclick="closeModal()" />
+            <img src="assets/icons/close.svg" tabindex= '0' onclick="closeModal()" />
           </header>
           <form>
             <div>
@@ -40,6 +40,7 @@
                 id="last"
                 name="last"
                 minlength="2"
+                tabindex= '0'
                 required
               />
               <label for="first" class="formData first" data-error="Vous devez entrer 2 caractères ou plus et pas de caractères spéciaux." data-error-visible="false">Nom</label>
@@ -48,6 +49,7 @@
                 id="first"
                 name="first"
                 minlength="2"
+                tabindex= '0'
                 required
               />
               <label for="email" class="formData email" data-error="Vous devez entrer une adresse email valide." data-error-visible="false">Email</label>
@@ -56,6 +58,7 @@
                 id="email"
                 name="email"
                 minlength="2"
+                tabindex= '0'
                 required
               />
               <label for="text" class="formData text" data-error="Vous devez entrer entrer 20 caractères ou plus et pas de caractères spéciaux." data-error-visible="false">Votre message</label>
@@ -64,10 +67,11 @@
                 id="text"
                 name="text"
                 minlength="20"
+                tabindex= '0'
                 required
               />
             </div>
-            <input class="contact_button" type="submit"></input>
+            <input class="contact_button" type="submit" tabindex= '0'></input>
           </form>
         </div>
         <div class="container-confirmation-submit">
@@ -86,7 +90,7 @@
       </aside>
     </main>
     <script src="/scripts//templates/photographer.js"></script>
-    <script src="/scripts/pages/photographer.js" type="module"></script>
+    <script src="/scripts/pages/photographer.js"></script>
     <script src="/scripts/utils/contactForm.js"></script>
   </body>
 </html>

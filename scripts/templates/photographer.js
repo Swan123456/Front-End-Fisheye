@@ -71,7 +71,10 @@ function photographerTemplate(data) {
   }
 
   return {
-    name, picture, getUserCardDOM, price,
+    name,
+    picture,
+    getUserCardDOM,
+    price,
   };
 }
 
@@ -155,11 +158,131 @@ function photographerProfilTemplate(photographer, media) {
       return likesTotal;
     }
 
+    // fonction d'affichage de l'image en grand
+    function displayImageOverlay(
+      imageUrl,
+      currentIndex,
+    ) {
+      const overlay = document.createElement('div');
+      overlay.classList.add('image-overlay');
+
+      const closeIcon = document.createElement('span');
+      closeIcon.classList.add('close-icon');
+      closeIcon.innerHTML = '&times;';
+      closeIcon.setAttribute('tabindex', '0');
+      overlay.appendChild(closeIcon);
+
+      let mediaElement;
+
+      if (mediaObjects[currentIndex].image) {
+        mediaElement = document.createElement('img');
+        mediaElement.setAttribute('src', imageUrl);
+        mediaElement.setAttribute('alt', 'Image en grand');
+      } else if (mediaObjects[currentIndex].video) {
+        mediaElement = document.createElement('video');
+        const source = document.createElement('source');
+        source.setAttribute('src', imageUrl);
+        source.setAttribute('type', 'video/mp4');
+        mediaElement.appendChild(source);
+        mediaElement.setAttribute('controls', '');
+        mediaElement.setAttribute('preload', 'metadata');
+      }
+
+      overlay.appendChild(mediaElement);
+
+      const backIcon = document.createElement('span');
+      backIcon.classList.add('back-icon');
+      backIcon.innerHTML = '<i class="fas fa-chevron-left"></i>';
+      backIcon.setAttribute('tabindex', '0');
+      overlay.appendChild(backIcon);
+
+      const nextIcon = document.createElement('span');
+      nextIcon.classList.add('next-icon');
+      nextIcon.innerHTML = '<i class="fas fa-chevron-right"></i>';
+      nextIcon.setAttribute('tabindex', '0');
+      overlay.appendChild(nextIcon);
+
+      document.body.appendChild(overlay);
+
+      closeIcon.addEventListener('click', () => {
+        document.body.removeChild(overlay);
+      });
+
+      closeIcon.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          document.body.removeChild(overlay);
+        }
+      });
+
+      backIcon.addEventListener('click', () => {
+        const prevIndex = currentIndex - 1 < 0 ? mediaObjects.length - 1 : currentIndex - 1;
+        const prevMedia = mediaObjects[prevIndex];
+        const prevImageUrl = `assets/media/${directoryName}/${
+          prevMedia.image || prevMedia.video
+        }`;
+        displayImageOverlay(
+          prevImageUrl,
+          prevIndex,
+          mediaObjects,
+          directoryName,
+        );
+        document.body.removeChild(overlay);
+      });
+
+      backIcon.addEventListener('keydown', () => {
+        const prevIndex = currentIndex - 1 < 0 ? mediaObjects.length - 1 : currentIndex - 1;
+        const prevMedia = mediaObjects[prevIndex];
+        const prevImageUrl = `assets/media/${directoryName}/${
+          prevMedia.image || prevMedia.video
+        }`;
+        displayImageOverlay(
+          prevImageUrl,
+          prevIndex,
+          mediaObjects,
+          directoryName,
+        );
+        document.body.removeChild(overlay);
+      });
+
+      nextIcon.addEventListener('click', () => {
+        const nextIndex = (currentIndex + 1) % mediaObjects.length;
+        const nextMedia = mediaObjects[nextIndex];
+        const nextImageUrl = `assets/media/${directoryName}/${
+          nextMedia.image || nextMedia.video
+        }`;
+        displayImageOverlay(
+          nextImageUrl,
+          nextIndex,
+          mediaObjects,
+          directoryName,
+        );
+        document.body.removeChild(overlay);
+      });
+
+      nextIcon.addEventListener('keydown', () => {
+        const nextIndex = (currentIndex + 1) % mediaObjects.length;
+        const nextMedia = mediaObjects[nextIndex];
+        const nextImageUrl = `assets/media/${directoryName}/${
+          nextMedia.image || nextMedia.video
+        }`;
+        displayImageOverlay(
+          nextImageUrl,
+          nextIndex,
+          mediaObjects,
+          directoryName,
+        );
+        document.body.removeChild(overlay);
+      });
+    }
+
     mediaObjects.forEach((m, index) => {
       const card = document.createElement('article');
       card.setAttribute('tabindex', '0');
-      let mediaElement = m.image ? document.createElement('img') : document.createElement('video');
+      let mediaElement = m.image
+        ? document.createElement('img')
+        : document.createElement('video');
       mediaElement.setAttribute('tabindex', '0');
+      mediaElement.setAttribute('alt', name);
       const content = document.createElement('div');
       content.setAttribute('tabindex', '0');
       const title = document.createElement('span');
@@ -169,12 +292,28 @@ function photographerProfilTemplate(photographer, media) {
       likes.classList.add('likes');
       likes.setAttribute('arialabel', `${m.likes} j'aimes`);
       likes.setAttribute('tabindex', '0');
-      const ariaLabel = (m.title);
+      const ariaLabel = m.title;
       card.setAttribute('aria-label', `${ariaLabel}, Agrandir l'image`);
       let imageUrl;
 
       // affichage de l'image en grand au clique
       mediaElement.addEventListener('click', (event) => {
+        event.stopPropagation();
+        if (m.video) {
+          mediaElement = document.createElement('video');
+          const source = document.createElement('source');
+          source.setAttribute('src', imageUrl);
+          source.setAttribute('type', 'video/mp4');
+          mediaElement.appendChild(source);
+          mediaElement.setAttribute('controls', '');
+          mediaElement.setAttribute('preload', 'metadata');
+        } else {
+          imageUrl = `assets/media/${directoryName}/${m.image}`;
+          displayImageOverlay(imageUrl, index, mediaObjects, directoryName);
+        }
+      });
+
+      mediaElement.addEventListener('keydown', (event) => {
         event.stopPropagation();
         if (m.video) {
           mediaElement = document.createElement('video');
@@ -199,13 +338,30 @@ function photographerProfilTemplate(photographer, media) {
       likeIcon.addEventListener('click', () => {
         if (likeIcon.classList.contains('far')) {
           // L'utilisateur a cliqué pour ajouter un like
-          m.likes++;
+          m.likes += 1;
           likes.textContent = m.likes;
           likeIcon.classList.remove('far');
           likeIcon.classList.add('fas');
         } else {
           // L'utilisateur a cliqué pour retirer un like
-          m.likes--;
+          m.likes -= 1;
+          likes.textContent = m.likes;
+          likeIcon.classList.remove('fas');
+          likeIcon.classList.add('far');
+        }
+        updateLikesTotal();
+      });
+
+      likeIcon.addEventListener('keydown', () => {
+        if (likeIcon.classList.contains('far')) {
+          // L'utilisateur a cliqué pour ajouter un like
+          m.likes += 1;
+          likes.textContent = m.likes;
+          likeIcon.classList.remove('far');
+          likeIcon.classList.add('fas');
+        } else {
+          // L'utilisateur a cliqué pour retirer un like
+          m.likes -= 1;
           likes.textContent = m.likes;
           likeIcon.classList.remove('fas');
           likeIcon.classList.add('far');
@@ -217,14 +373,14 @@ function photographerProfilTemplate(photographer, media) {
       if (m.image) {
         mediaElement.setAttribute(
           'src',
-          `assets/media/${directoryName}/${m.image}`
+          `assets/media/${directoryName}/${m.image}`,
         );
       } else if (m.video) {
         const source = document.createElement('source');
         source.setAttribute('src', `assets/media/${directoryName}/${m.video}`);
         source.setAttribute('type', 'video/mp4');
         mediaElement.appendChild(source);
-        mediaElement.setAttribute('controls', "");
+        mediaElement.setAttribute('controls', '');
         mediaElement.setAttribute('preload', 'metadata');
       }
 
@@ -235,7 +391,7 @@ function photographerProfilTemplate(photographer, media) {
       card.appendChild(mediaElement);
       card.appendChild(title);
       card.appendChild(content);
-      content.appendChild(title);title
+      content.appendChild(title);
       content.appendChild(likes);
       content.appendChild(likeIcon);
 
@@ -257,11 +413,6 @@ function photographerProfilTemplate(photographer, media) {
       selectElement.appendChild(optionElement);
     });
 
-    selectElement.addEventListener('change', () => {
-      const selectedValue = selectElement.value;
-      sortMedia(selectedValue);
-    });
-
     function sortMedia(selectedValue) {
       const portfolioSection = document.querySelector('.portfolio');
       const cards = Array.from(portfolioSection.querySelectorAll('article'));
@@ -273,30 +424,29 @@ function photographerProfilTemplate(photographer, media) {
       switch (selectedValue) {
         case 'popularite':
           cards.sort((a, b) => {
-            const likesA = parseInt(a.querySelector("span.likes").textContent);
-            const likesB = parseInt(b.querySelector("span.likes").textContent);
+            const likesA = parseInt(a.querySelector('span.likes').textContent, 10);
+            const likesB = parseInt(b.querySelector('span.likes').textContent, 10);
             return likesB - likesA;
           });
           break;
         case 'date':
           cards.sort((a, b) => {
             const mediaA = mediaObjects.find(
-              (media) => media.pictureId === a.pictureId
+              (media) => media.pictureId === a.pictureId,
             );
             const mediaB = mediaObjects.find(
-              (media) => media.pictureId === b.pictureId
+              (media) => media.pictureId === b.pictureId,
             );
             const dateA = mediaA ? mediaA.getDate() : null;
             const dateB = mediaB ? mediaB.getDate() : null;
             if (dateA && dateB) {
               return dateA - dateB;
-            } else if (dateA) {
+            } if (dateA) {
               return -1;
-            } else if (dateB) {
+            } if (dateB) {
               return 1;
-            } else {
-              return 0;
             }
+            return 0;
           });
           break;
         case 'titre':
@@ -314,79 +464,11 @@ function photographerProfilTemplate(photographer, media) {
         portfolioSection.appendChild(card);
       });
     }
-  }
-
-  // fonction d'affichage de l'image en grand
-  function displayImageOverlay(
-    imageUrl,
-    currentIndex,
-    mediaObjects,
-    directoryName
-  ) {
-    const overlay = document.createElement('div');
-    overlay.classList.add('image-overlay');
-
-    const closeIcon = document.createElement('span');
-    closeIcon.classList.add('close-icon');
-    closeIcon.innerHTML = '&times;';
-    overlay.appendChild(closeIcon);
-
-    let mediaElement;
-
-    if (mediaObjects[currentIndex].image) {
-      mediaElement = document.createElement('img');
-      mediaElement.setAttribute('src', imageUrl);
-      mediaElement.setAttribute('alt', 'Image en grand');
-    } else if (mediaObjects[currentIndex].video) {
-      mediaElement = document.createElement('video');
-      const source = document.createElement('source');
-      source.setAttribute('src', imageUrl);
-      source.setAttribute('type', 'video/mp4');
-      mediaElement.appendChild(source);
-      mediaElement.setAttribute('controls', "");
-      mediaElement.setAttribute('preload', 'metadata');
-    }
-
-    overlay.appendChild(mediaElement);
-
-    const backIcon = document.createElement("span");
-    backIcon.classList.add("back-icon");
-    backIcon.innerHTML = '<i class="fas fa-chevron-left"></i>';
-    overlay.appendChild(backIcon);
-
-    const nextIcon = document.createElement('span');
-    nextIcon.classList.add('next-icon');
-    nextIcon.innerHTML = '<i class="fas fa-chevron-right"></i>';
-    overlay.appendChild(nextIcon);
-
-    document.body.appendChild(overlay);
-
-    closeIcon.addEventListener('click', () => {
-      document.body.removeChild(overlay);
-    });
-
-    backIcon.addEventListener('click', () => {
-      const prevIndex =
-        currentIndex - 1 < 0 ? mediaObjects.length - 1 : currentIndex - 1;
-      const prevMedia = mediaObjects[prevIndex];
-      const prevImageUrl = `assets/media/${directoryName}/${
-        prevMedia.image || prevMedia.video
-      }`;
-      displayImageOverlay(prevImageUrl, prevIndex, mediaObjects, directoryName);
-      document.body.removeChild(overlay);
-    });
-
-    nextIcon.addEventListener('click', () => {
-      const nextIndex = (currentIndex + 1) % mediaObjects.length;
-      const nextMedia = mediaObjects[nextIndex];
-      const nextImageUrl = `assets/media/${directoryName}/${
-        nextMedia.image || nextMedia.video
-      }`;
-      displayImageOverlay(nextImageUrl, nextIndex, mediaObjects, directoryName);
-      document.body.removeChild(overlay);
+    selectElement.addEventListener('change', () => {
+      const selectedValue = selectElement.value;
+      sortMedia(selectedValue);
     });
   }
-
   portfolio();
   photographerProfil();
 }
@@ -394,53 +476,18 @@ function photographerProfilTemplate(photographer, media) {
 // Protège contre en envois du formulaire par default + appelle fonction de validation
 const validForm = document.querySelector('input[type="submit"]');
 const modalSubmit = document.querySelector('.container-confirmation-submit');
-let formCompleted = false;
-let formData = {};
-checkForm();
-const inputs = document.querySelectorAll('#first, #last, #email, #text');
+const formCompleted = false;
 function checkForm() {
   // Tableau pour stocker les résultats de validation
   const inputs = document.querySelectorAll('#first, #last, #email, #text');
   const validationResults = new Array(inputs.length).fill(false);
-  inputs.forEach((input, index) => {
-    input.addEventListener('input', (e) => {
-      switch (e.target.id) {
-        case 'first':
-          validationResults[index] = firstCheck(e.target.value);
-          break;
-        case 'last':
-          validationResults[index] = lastCheck(e.target.value);
-          break;
-        case 'email':
-          validationResults[index] = emailCheck(e.target.value);
-          break;
-        case 'text':
-          validationResults[index] = textCheck(e.target.value);
-          break;
-        default:
-          null;
-      }
-      // Vérifie si toutes les fonctions ont retourné true
-      const allValid = validationResults.every((result) => result === true);
-      if (allValid) {
-        validForm.addEventListener('click', function (event) {
-          event.preventDefault();
-          formCompleted === true;
-          formValues(inputs);
-          const formData = formValues(inputs);
-          console.log(formData);
-          confirmationForm();
-        });
-      }
-    });
-  });
 
-  //check du prenom (input vide + regex)
+  // check du prenom (input vide + regex)
   const firstCheck = (value) => {
     const error = document.querySelector('.first');
     const regex = /^[a-zA-ZÀ-ÖØ-öø-ÿ\s]+$/;
     let valid = false;
-    if (value.length < 2 || value.trim() === "" || !regex.test(value)) {
+    if (value.length < 2 || value.trim() === '' || !regex.test(value)) {
       error.setAttribute('data-error-visible', 'true');
     } else {
       valid = true;
@@ -453,7 +500,7 @@ function checkForm() {
     const regex = /^[a-zA-ZÀ-ÖØ-öø-ÿ\s]+$/;
     const error = document.querySelector('.last');
     let valid = false;
-    if (value.length < 2 || value.trim() === "" || !regex.test(value)) {
+    if (value.length < 2 || value.trim() === '' || !regex.test(value)) {
       error.setAttribute('data-error-visible', 'true');
     } else {
       valid = true;
@@ -473,12 +520,12 @@ function checkForm() {
     }
     return valid;
   };
-  //check du prenom (input vide + regex)
+  // check du prenom (input vide + regex)
   const textCheck = (value) => {
     const error = document.querySelector('.text');
     const regex = /^[a-zA-ZÀ-ÖØ-öø-ÿ\s]+$/;
     let valid = false;
-    if (value.length < 20 || value.trim() === "" || !regex.test(value)) {
+    if (value.length < 20 || value.trim() === '' || !regex.test(value)) {
       error.setAttribute('data-error-visible', 'true');
     } else {
       valid = true;
@@ -486,12 +533,52 @@ function checkForm() {
     }
     return valid;
   };
+  inputs.forEach((input, index) => {
+    input.addEventListener('input', (e) => {
+      switch (e.target.id) {
+        case 'first':
+          validationResults[index] = firstCheck(e.target.value);
+          break;
+        case 'last':
+          validationResults[index] = lastCheck(e.target.value);
+          break;
+        case 'email':
+          validationResults[index] = emailCheck(e.target.value);
+          break;
+        case 'text':
+          validationResults[index] = textCheck(e.target.value);
+          break;
+        default:
+      }
+      // Vérifie si toutes les fonctions ont retourné true
+      const allValid = validationResults.every((result) => result === true);
+      if (allValid) {
+        validForm.addEventListener('click', (event) => {
+          event.preventDefault();
+          formCompleted === true;
+          formValues(inputs);
+          const formData = formValues(inputs);
+          console.log(formData);
+          confirmationForm();
+        });
+        validForm.addEventListener('keydown', (event) => {
+          event.preventDefault();
+          formCompleted === true;
+          formValues(inputs);
+          const formData = formValues(inputs);
+          console.log(formData);
+          confirmationForm();
+        });
+      }
+    });
+  });
 }
+checkForm();
 
 function formValues(inputs) {
-  let dataForm = [];
+  const dataForm = [];
 
-  for (let i = 0; i < inputs.length; i++) {
+  for (let i = 0; i < inputs.length; i += 1) {
     if (inputs[i].type === 'text' || inputs[i].type === 'email') {
       dataForm.push(inputs[i].value);
     }
