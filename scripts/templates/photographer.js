@@ -1,281 +1,486 @@
 class Photographer {
-    constructor(id, tagline, city) {
-      this.id = id;
-      this.tagline = tagline;
-      this.city = city;
-    } 
+  constructor(id, tagline, city) {
+    this.id = id;
+    this.tagline = tagline;
+    this.city = city;
+  }
 }
 
 class Media {
-    constructor(data) {
-        if (data.image) {
-            this.pictureId = data.id;
-            this.title = data.title;
-            this.image = data.image;
-            this.likes = data.likes;
-            this.date = data.date;
-            this.price = data.price;
-        } else if (data.video) {
-            this.pictureId = data.id;
-            this.title = data.title;
-            this.video = data.video;
-            this.likes = data.likes;
-            this.date = data.date;
-            this.price = data.price;
-        }
+  constructor(data) {
+    if (data.image) {
+      this.pictureId = data.id;
+      this.title = data.title;
+      this.image = data.image;
+      this.likes = data.likes;
+      this.date = data.date;
+      this.price = data.price;
+    } else if (data.video) {
+      this.pictureId = data.id;
+      this.title = data.title;
+      this.video = data.video;
+      this.likes = data.likes;
+      this.date = data.date;
+      this.price = data.price;
     }
-    getLikes() {
-        return this.likes;
-    }
+  }
+  getLikes() {
+    return this.likes;
+  }
+  getDate() {
+    const adjustedDate = new Date(this.date);
+    adjustedDate.setHours(0, 0, 0, 0);
+    return adjustedDate;
+  }
 }
-
 function photographerTemplate(data) {
-    const { id, name, portrait, city, country, tagline, price } = data;
+  const { id, name, portrait, city, country, tagline, price } = data;
 
-    const picture = `assets/photographers/${portrait}`;
-    const alt = 'photo de profil de ' + name;
-    const linkHref = 'photographer.html?photographer=' + id;
+  const picture = `assets/photographers/${portrait}`;
+  const alt = "photo de profil de " + name;
+  const linkHref = "photographer.html?photographer=" + id;
 
-    function getUserCardDOM() {
-        const article = document.createElement('article');
-        const link = document.createElement('a');
-        link.setAttribute('href', linkHref);
+  function getUserCardDOM() {
+    const article = document.createElement("article");
+    const link = document.createElement("a");
+    link.setAttribute("href", linkHref);
 
-        const img = document.createElement('img');
-        img.setAttribute('src', picture);
-        img.setAttribute('alt', alt);
+    const img = document.createElement("img");
+    img.setAttribute("src", picture);
+    img.setAttribute("alt", alt);
 
-        const h2 = document.createElement('h2');
-        h2.textContent = name;
+    const h2 = document.createElement("h2");
+    h2.textContent = name;
 
-        const p = document.createElement('p');
-        p.textContent = city + ', ' + country;
+    const p = document.createElement("p");
+    p.textContent = city + ", " + country;
 
-        const desc = document.createElement('p');
-        desc.innerHTML = tagline + `<br>` + price + '€' + '/jour';
+    const desc = document.createElement("p");
+    desc.innerHTML = tagline + `<br>` + price + "€" + "/jour";
 
-        link.appendChild(img);
-        link.appendChild(h2);
-        article.appendChild(link);
-        article.appendChild(p);
-        article.appendChild(desc);
+    link.appendChild(img);
+    link.appendChild(h2);
+    article.appendChild(link);
+    article.appendChild(p);
+    article.appendChild(desc);
 
-        return article;
-    }
+    return article;
+  }
 
-    return { name, picture, getUserCardDOM, price };
+  return { name, picture, getUserCardDOM, price };
 }
 
 function photographerProfilTemplate(photographer, media) {
-    const { id, name, portrait, city, country, tagline, price } = photographer;
-    const photographersSection = document.querySelector(".photograph-header");
-    const portfolioSection = document.querySelector(".portfolio-section");
-    const directoryName = name.split(' ')[0];
+  const { id, name, portrait, city, country, tagline, price } = photographer;
+  const photographersSection = document.querySelector(".photograph-header");
+  const portfolioSection = document.querySelector(".portfolio-section");
+  const directoryName = name.split(" ")[0];
 
-    // declaration des variables pour compter les likes 
-    const likesTotalElement = document.createElement('div');
+  // declaration des variables pour compter les likes
+  const likesTotalElement = document.createElement("div");
 
-    // instansiation de l'objet media
-    const mediaObjects = media.map((m) => new Media(m));
+  // instansiation de l'objet media
+  const mediaObjects = media.map((m) => new Media(m));
 
-    function photographerProfil() {
-        const div = document.createElement('div');
-        photographersSection.appendChild(div);
+  function photographerProfil() {
+    const div = document.createElement("div");
+    photographersSection.appendChild(div);
 
-        const h1 = document.createElement('h1');
-        h1.textContent = name;
-      
-        const pCity = document.createElement('p');
-        pCity.textContent = city + ' ' + country;
+    const h1 = document.createElement("h1");
+    h1.textContent = name;
 
-        const pTagline = document.createElement('p');
-        pTagline.textContent = tagline;
+    const pCity = document.createElement("p");
+    pCity.textContent = city + " " + country;
 
-        div.appendChild(h1);
-        div.appendChild(pCity);
-        div.appendChild(pTagline);
+    const pTagline = document.createElement("p");
+    pTagline.textContent = tagline;
 
-        const divPortrait = document.createElement('div');
-        photographersSection.appendChild(divPortrait);
+    div.appendChild(h1);
+    div.appendChild(pCity);
+    div.appendChild(pTagline);
 
-        const img = document.createElement('img');
-        img.setAttribute('src', `assets/photographers/${portrait}`);
-        img.setAttribute('alt', name);
+    const divPortrait = document.createElement("div");
+    photographersSection.appendChild(divPortrait);
 
-        divPortrait.appendChild(img);
+    const img = document.createElement("img");
+    img.setAttribute("src", `assets/photographers/${portrait}`);
+    img.setAttribute("alt", name);
 
-        const contactButton = document.querySelector('.contact_button');
-        photographersSection.insertBefore(div, contactButton, div);
-        aside();
+    divPortrait.appendChild(img);
+
+    const contactButton = document.querySelector(".contact_button");
+    photographersSection.insertBefore(div, contactButton, div);
+    aside();
+  }
+
+  function portfolio() {
+    const div = document.querySelector(".portfolio");
+    // variable pour avoir le bon chemin du dossier ou se trouve les photos
+    portfolioSection.appendChild(div);
+    let likesTotal = 0;
+    likesTotalElement.textContent = likesTotal;
+
+    // mise a joursdes likes totals pour le petit onglet aside en bas a droite
+    function updateLikesTotal() {
+      likesTotal = 0;
+      mediaObjects.forEach((m) => {
+        likesTotal += m.getLikes();
+      });
+      likesTotalElement.textContent = likesTotal;
+      return likesTotal;
     }
 
-    function portfolio() {
-        const div = document.querySelector('.portfolio');
-        // variable pour avoir le bon chemin du dossier ou se trouve les photos
-        portfolioSection.appendChild(div);
-        let likesTotal = 0; 
-        likesTotalElement.textContent = likesTotal;
+    mediaObjects.forEach((m, index) => {
+      const card = document.createElement("article");
+      const mediaElement = m.image
+        ? document.createElement("img")
+        : document.createElement("video");
+      const content = document.createElement("div");
+      const name = document.createElement("span");
+      name.classList.add("name");
+      const likes = document.createElement("span");
+      likes.classList.add("likes");
 
-        // mise a joursdes likes totals pour le petit onglet aside en bas a droite 
-        function updateLikesTotal() {
-            likesTotal = 0;
-            mediaObjects.forEach((m) => {
-              likesTotal += m.getLikes();
-            });
-            likesTotalElement.textContent = likesTotal;
-            return likesTotal;
+      // affichage de l'image en grand au clique
+      mediaElement.addEventListener("click", (event) => {
+        event.stopPropagation();
+        if (m.video) {
+          mediaElement = document.createElement("video");
+          const source = document.createElement("source");
+          source.setAttribute("src", imageUrl);
+          source.setAttribute("type", "video/mp4");
+          mediaElement.appendChild(source);
+          mediaElement.setAttribute("controls", "");
+          mediaElement.setAttribute("preload", "metadata");
+        } else {
+          const imageUrl = `assets/media/${directoryName}/${m.image}`;
+          displayImageOverlay(imageUrl, index, mediaObjects, directoryName);
         }
-        
-        mediaObjects.forEach((m, index) => {
-            const card = document.createElement('article');
-            const mediaElement = m.image ? document.createElement('img') : document.createElement('video');
-            const content = document.createElement('div');
-            const name = document.createElement('span');
-            const likes = document.createElement('span');
+      });
 
-            // affichage de l'image en grand au clique
-            mediaElement.addEventListener('click', (event) => {
-                event.stopPropagation();
-                if (m.video) {
-                    mediaElement = document.createElement('video');
-                    const source = document.createElement('source');
-                    source.setAttribute('src', imageUrl);
-                    source.setAttribute('type', 'video/mp4');
-                    mediaElement.appendChild(source);
-                    mediaElement.setAttribute('controls', '');
-                    mediaElement.setAttribute('preload', 'metadata');
-                } else {
-                  const imageUrl = `assets/media/${directoryName}/${m.image}`;
-                  displayImageOverlay(imageUrl, index, mediaObjects, directoryName);
-                }
-              });
+      // incrementation ou décrémentation des likes au click
+      const likeIcon = document.createElement("i");
+      likeIcon.classList.add("far", "fa-heart");
 
-            // incrementation ou décrémentation des likes au click
-            const likeIcon = document.createElement('i');
-            likeIcon.classList.add('far', 'fa-heart');
-
-            likeIcon.addEventListener('click', () => {
-            if (likeIcon.classList.contains('far')) {
-                // L'utilisateur a cliqué pour ajouter un like
-                m.likes++;
-                likes.textContent = m.likes;
-                likeIcon.classList.remove('far');
-                likeIcon.classList.add('fas');
-            } else {
-                // L'utilisateur a cliqué pour retirer un like
-                m.likes--;
-                likes.textContent = m.likes;
-                likeIcon.classList.remove('fas');
-                likeIcon.classList.add('far');
-            }
-            updateLikesTotal();
-        });
+      likeIcon.addEventListener("click", () => {
+        if (likeIcon.classList.contains("far")) {
+          // L'utilisateur a cliqué pour ajouter un like
+          m.likes++;
+          likes.textContent = m.likes;
+          likeIcon.classList.remove("far");
+          likeIcon.classList.add("fas");
+        } else {
+          // L'utilisateur a cliqué pour retirer un like
+          m.likes--;
+          likes.textContent = m.likes;
+          likeIcon.classList.remove("fas");
+          likeIcon.classList.add("far");
+        }
         updateLikesTotal();
-        
-            if (m.image) {
-                mediaElement.setAttribute('src', `assets/media/${directoryName}/${m.image}`);
-            } else if (m.video) {
-                const source = document.createElement('source');
-                source.setAttribute('src', `assets/media/${directoryName}/${m.video}`);
-                source.setAttribute('type', 'video/mp4');
-                mediaElement.appendChild(source);
-                mediaElement.setAttribute('controls', '');
-                mediaElement.setAttribute('preload', 'metadata');
+      });
+      updateLikesTotal();
+
+      if (m.image) {
+        mediaElement.setAttribute(
+          "src",
+          `assets/media/${directoryName}/${m.image}`
+        );
+      } else if (m.video) {
+        const source = document.createElement("source");
+        source.setAttribute("src", `assets/media/${directoryName}/${m.video}`);
+        source.setAttribute("type", "video/mp4");
+        mediaElement.appendChild(source);
+        mediaElement.setAttribute("controls", "");
+        mediaElement.setAttribute("preload", "metadata");
+      }
+
+      likesTotal += m.likes;
+      name.textContent = m.title;
+      likes.textContent = m.likes;
+
+      card.appendChild(mediaElement);
+      card.appendChild(name);
+      card.appendChild(content);
+      content.appendChild(name);
+      content.appendChild(likes);
+      content.appendChild(likeIcon);
+
+      div.appendChild(card);
+    });
+
+    // fonctionnalitée de filtre
+    const filterSection = document.querySelector(".filter");
+
+    const selectElement = document.createElement("select");
+    selectElement.classList.add("selector");
+    filterSection.appendChild(selectElement);
+
+    const options = ["popularite", "date", "titre"];
+    options.forEach((option) => {
+      const optionElement = document.createElement("option");
+      optionElement.value = option;
+      optionElement.textContent = option;
+      selectElement.appendChild(optionElement);
+    });
+
+    selectElement.addEventListener("change", () => {
+      const selectedValue = selectElement.value;
+      sortMedia(selectedValue);
+    });
+
+    function sortMedia(selectedValue) {
+      const portfolioSection = document.querySelector(".portfolio");
+      const cards = Array.from(portfolioSection.querySelectorAll("article"));
+
+      while (portfolioSection.firstChild) {
+        portfolioSection.removeChild(portfolioSection.firstChild);
+      }
+
+      switch (selectedValue) {
+        case "popularite":
+          cards.sort((a, b) => {
+            const likesA = parseInt(a.querySelector("span.likes").textContent);
+            const likesB = parseInt(b.querySelector("span.likes").textContent);
+            return likesB - likesA;
+          });
+          break;
+        case "date":
+          cards.sort((a, b) => {
+            const mediaA = mediaObjects.find(
+              (media) => media.pictureId === a.pictureId
+            );
+            const mediaB = mediaObjects.find(
+              (media) => media.pictureId === b.pictureId
+            );
+            const dateA = mediaA ? mediaA.getDate() : null;
+            const dateB = mediaB ? mediaB.getDate() : null;
+            if (dateA && dateB) {
+              return dateA - dateB;
+            } else if (dateA) {
+              return -1;
+            } else if (dateB) {
+              return 1;
+            } else {
+              return 0;
             }
-              
-              likesTotal += m.likes;
-              name.textContent = m.title;
-              likes.textContent = m.likes;
-          
-              card.appendChild(mediaElement);
-              card.appendChild(name);
-              card.appendChild(content);
-              content.appendChild(name);
-              content.appendChild(likes);
-              content.appendChild(likeIcon);
-          
-              div.appendChild(card);
-        });
+          });
+          break;
+        case "titre":
+          cards.sort((a, b) => {
+            const titleA = a.querySelector(".name").textContent.toLowerCase();
+            const titleB = b.querySelector(".name").textContent.toLowerCase();
+            return titleA.localeCompare(titleB);
+          });
+          break;
+        default:
+          break;
+      }
+
+      cards.forEach((card) => {
+        portfolioSection.appendChild(card);
+      });
+    }
+  }
+
+  // affichage de l'onglet en bas a droite
+  function aside() {
+    const asideElement = document.querySelector("aside");
+    const priceElement = document.createElement("div");
+    const likeIcon = document.createElement("i");
+    likeIcon.classList.add("fas", "fa-heart");
+
+    priceElement.textContent = price + "€" + "/jour";
+    asideElement.appendChild(likesTotalElement);
+    asideElement.appendChild(likeIcon);
+    asideElement.appendChild(priceElement);
+  }
+
+  // fonction d'affichage de l'image en grand
+  function displayImageOverlay(
+    imageUrl,
+    currentIndex,
+    mediaObjects,
+    directoryName
+  ) {
+    const overlay = document.createElement("div");
+    overlay.classList.add("image-overlay");
+
+    const closeIcon = document.createElement("span");
+    closeIcon.classList.add("close-icon");
+    closeIcon.innerHTML = "&times;";
+    overlay.appendChild(closeIcon);
+
+    let mediaElement;
+
+    if (mediaObjects[currentIndex].image) {
+      mediaElement = document.createElement("img");
+      mediaElement.setAttribute("src", imageUrl);
+      mediaElement.setAttribute("alt", "Image en grand");
+    } else if (mediaObjects[currentIndex].video) {
+      mediaElement = document.createElement("video");
+      const source = document.createElement("source");
+      source.setAttribute("src", imageUrl);
+      source.setAttribute("type", "video/mp4");
+      mediaElement.appendChild(source);
+      mediaElement.setAttribute("controls", "");
+      mediaElement.setAttribute("preload", "metadata");
     }
 
-    // affichage de l'onglet e bas a droite 
-    function aside() {
-        const asideElement = document.querySelector('aside');
-        const priceElement = document.createElement('div');
-        const likeIcon = document.createElement('i');
-        likeIcon.classList.add('fas', 'fa-heart');
+    overlay.appendChild(mediaElement);
 
-        priceElement.textContent = price + '€' + '/jour';
-        asideElement.appendChild(likesTotalElement);
-        asideElement.appendChild(likeIcon);
-        asideElement.appendChild(priceElement);
-    }
+    const backIcon = document.createElement("span");
+    backIcon.classList.add("back-icon");
+    backIcon.innerHTML = '<i class="fas fa-chevron-left"></i>';
+    overlay.appendChild(backIcon);
 
-    // fonction d'affichage de l'image en grand
-    function displayImageOverlay(imageUrl, currentIndex, mediaObjects, directoryName) {
-        const overlay = document.createElement('div');
-        overlay.classList.add('image-overlay');
+    const nextIcon = document.createElement("span");
+    nextIcon.classList.add("next-icon");
+    nextIcon.innerHTML = '<i class="fas fa-chevron-right"></i>';
+    overlay.appendChild(nextIcon);
 
-        const closeIcon = document.createElement('span');
-        closeIcon.classList.add('close-icon');
-        closeIcon.innerHTML = '&times;';
-        overlay.appendChild(closeIcon);
+    document.body.appendChild(overlay);
 
-        let mediaElement;
+    closeIcon.addEventListener("click", () => {
+      document.body.removeChild(overlay);
+    });
 
-          if (mediaObjects[currentIndex].image) {
-            mediaElement = document.createElement('img');
-            mediaElement.setAttribute('src', imageUrl);
-            mediaElement.setAttribute('alt', 'Image en grand');
-          } else if (mediaObjects[currentIndex].video) {
-            mediaElement = document.createElement('video');
-            const source = document.createElement('source');
-            source.setAttribute('src', imageUrl);
-            source.setAttribute('type', 'video/mp4');
-            mediaElement.appendChild(source);
-            mediaElement.setAttribute('controls', '');
-            mediaElement.setAttribute('preload', 'metadata');
-          }
-          
-        overlay.appendChild(mediaElement);
+    backIcon.addEventListener("click", () => {
+      const prevIndex =
+        currentIndex - 1 < 0 ? mediaObjects.length - 1 : currentIndex - 1;
+      const prevMedia = mediaObjects[prevIndex];
+      const prevImageUrl = `assets/media/${directoryName}/${
+        prevMedia.image || prevMedia.video
+      }`;
+      displayImageOverlay(prevImageUrl, prevIndex, mediaObjects, directoryName);
+      document.body.removeChild(overlay);
+    });
 
-        const backIcon = document.createElement('span');
-        backIcon.classList.add('back-icon');
-        backIcon.innerHTML = '<i class="fas fa-chevron-left"></i>';
-        overlay.appendChild(backIcon);
+    nextIcon.addEventListener("click", () => {
+      const nextIndex = (currentIndex + 1) % mediaObjects.length;
+      const nextMedia = mediaObjects[nextIndex];
+      const nextImageUrl = `assets/media/${directoryName}/${
+        nextMedia.image || nextMedia.video
+      }`;
+      displayImageOverlay(nextImageUrl, nextIndex, mediaObjects, directoryName);
+      document.body.removeChild(overlay);
+    });
+  }
 
-        const nextIcon = document.createElement('span');
-        nextIcon.classList.add('next-icon');
-        nextIcon.innerHTML = '<i class="fas fa-chevron-right"></i>';
-        overlay.appendChild(nextIcon);
-      
-        document.body.appendChild(overlay);
-
-        closeIcon.addEventListener('click', () => {
-            document.body.removeChild(overlay);
-        });
-
-        backIcon.addEventListener('click', () => {
-            const prevIndex = currentIndex - 1 < 0 ? mediaObjects.length - 1 : currentIndex - 1;
-            const prevMedia = mediaObjects[prevIndex];
-            const prevImageUrl = `assets/media/${directoryName}/${prevMedia.image || prevMedia.video}`;
-            displayImageOverlay(prevImageUrl, prevIndex, mediaObjects, directoryName);
-            document.body.removeChild(overlay);
-        });
-
-        nextIcon.addEventListener('click', () => {
-            const nextIndex = (currentIndex + 1) % mediaObjects.length;
-            const nextMedia = mediaObjects[nextIndex];
-            const nextImageUrl = `assets/media/${directoryName}/${nextMedia.image || nextMedia.video}`;
-            displayImageOverlay(nextImageUrl, nextIndex, mediaObjects, directoryName);
-            document.body.removeChild(overlay);
-        });
-
-    }
-
-    portfolio()
-    photographerProfil()
-
+  portfolio();
+  photographerProfil();
 }
 
+// Protège contre en envois du formulaire par default + appelle fonction de validation
+const validForm = document.querySelector('input[type="submit"]');
+const modalSubmit = document.querySelector(".container-confirmation-submit");
+let formCompleted = false;
+let formData = {};
+checkForm();
+const inputs = document.querySelectorAll("#first, #last, #email, #text");
+function checkForm() {
+  // Tableau pour stocker les résultats de validation
+  const inputs = document.querySelectorAll("#first, #last, #email, #text");
+  const validationResults = new Array(inputs.length).fill(false);
+  inputs.forEach((input, index) => {
+    input.addEventListener("input", (e) => {
+      switch (e.target.id) {
+        case "first":
+          validationResults[index] = firstCheck(e.target.value);
+          break;
+        case "last":
+          validationResults[index] = lastCheck(e.target.value);
+          break;
+        case "email":
+          validationResults[index] = emailCheck(e.target.value);
+          break;
+        case "text":
+          validationResults[index] = textCheck(e.target.value);
+          break;
+        default:
+          null;
+      }
+      // Vérifie si toutes les fonctions ont retourné true
+      const allValid = validationResults.every((result) => result === true);
+      if (allValid) {
+        validForm.addEventListener("click", function (event) {
+          event.preventDefault();
+          formCompleted === true;
+          formValues(inputs);
+          const formData = formValues(inputs);
+          console.log(formData);
+          confirmationForm();
+        });
+      }
+    });
+  });
 
+  //check du prenom (input vide + regex)
+  const firstCheck = (value) => {
+    const error = document.querySelector(".first");
+    const regex = /^[a-zA-ZÀ-ÖØ-öø-ÿ\s]+$/;
+    let valid = false;
+    if (value.length < 2 || value.trim() === "" || !regex.test(value)) {
+      error.setAttribute("data-error-visible", "true");
+    } else {
+      valid = true;
+      error.setAttribute("data-error-visible", "ok");
+    }
+    return valid;
+  };
+  // check du nom (input vide + regex)
+  const lastCheck = (value) => {
+    const regex = /^[a-zA-ZÀ-ÖØ-öø-ÿ\s]+$/;
+    const error = document.querySelector(".last");
+    let valid = false;
+    if (value.length < 2 || value.trim() === "" || !regex.test(value)) {
+      error.setAttribute("data-error-visible", "true");
+    } else {
+      valid = true;
+      error.setAttribute("data-error-visible", "ok");
+    }
+    return valid;
+  };
+  // check du mail
+  const emailCheck = (value) => {
+    const error = document.querySelector(".email");
+    let valid = false;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      error.setAttribute("data-error-visible", "true");
+    } else {
+      valid = true;
+      error.setAttribute("data-error-visible", "ok");
+    }
+    return valid;
+  };
+  //check du prenom (input vide + regex)
+  const textCheck = (value) => {
+    const error = document.querySelector(".text");
+    const regex = /^[a-zA-ZÀ-ÖØ-öø-ÿ\s]+$/;
+    let valid = false;
+    if (value.length < 20 || value.trim() === "" || !regex.test(value)) {
+      error.setAttribute("data-error-visible", "true");
+    } else {
+      valid = true;
+      error.setAttribute("data-error-visible", "ok");
+    }
+    return valid;
+  };
+}
+
+function formValues(inputs) {
+  let dataForm = [];
+
+  for (let i = 0; i < inputs.length; i++) {
+    if (inputs[i].type === "text" || inputs[i].type === "email") {
+      dataForm.push(inputs[i].value);
+    }
+  }
+
+  return dataForm;
+}
+
+function confirmationForm() {
+  const modal = document.getElementById("contact_modal");
+  modalSubmit.style.display = "block";
+  modal.style.display = "none";
+}

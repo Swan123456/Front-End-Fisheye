@@ -20,7 +20,7 @@
       </section>
       <section class="portfolio-section">
         <section class="filter">
-
+          Trier par
         </section>
         <div class="portfolio">
 
@@ -34,11 +34,51 @@
           </header>
           <form>
             <div>
-              <label>Prénom</label>
-              <input />
+              <label for="last" class="formData last" data-error="Vous devez entrer 2 caractères ou plus et pas de caractères spéciaux." data-error-visible="false">Prénom</label>
+              <input 
+                type="text"
+                id="last"
+                name="last"
+                minlength="2"
+                required
+              />
+              <label for="first" class="formData first" data-error="Vous devez entrer 2 caractères ou plus et pas de caractères spéciaux." data-error-visible="false">Nom</label>
+              <input 
+                type="text"
+                id="first"
+                name="first"
+                minlength="2"
+                required
+              />
+              <label for="email" class="formData email" data-error="Vous devez entrer une adresse email valide." data-error-visible="false">Email</label>
+              <input 
+                type="text"
+                id="email"
+                name="email"
+                minlength="2"
+                required
+              />
+              <label for="text" class="formData text" data-error="Vous devez entrer entrer 20 caractères ou plus et pas de caractères spéciaux." data-error-visible="false">Votre message</label>
+              <input 
+                type="text"
+                id="text"
+                name="text"
+                minlength="20"
+                required
+              />
             </div>
-            <button class="contact_button">Envoyer</button>
+            <input class="contact_button" type="submit"></input>
           </form>
+        </div>
+        <div class="container-confirmation-submit">
+          <div class="submitted-form">
+            <span class="close-modal-submit"></span>
+            <p>
+              Merci !
+              <br>
+              Votre méssage a été reçue.
+            </p>
+          </div>
         </div>
       </div>
       <aside>
